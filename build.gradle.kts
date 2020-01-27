@@ -25,6 +25,7 @@ plugins {
     id("io.gitlab.arturbosch.detekt") version "1.3.1"
     id("org.jmailen.kotlinter") version "2.1.3"
     id("org.kordamp.gradle.project") version "0.31.2"
+    id("net.thauvin.erik.gradle.semver").version("1.0.4")
     kotlin("jvm") version "1.3.61"
 }
 
