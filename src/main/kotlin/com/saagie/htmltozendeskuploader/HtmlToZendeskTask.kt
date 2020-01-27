@@ -1,4 +1,5 @@
 package com.saagie.htmltozendeskuploader
+
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -16,17 +17,21 @@ package com.saagie.htmltozendeskuploader
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import arrow.core.*
+
+import arrow.core.flatMap
+import arrow.core.getOrHandle
+import arrow.core.handleErrorWith
+import arrow.core.rightIfNotNull
 import com.saagie.htmltozendeskuploader.model.Article
 import com.saagie.htmltozendeskuploader.model.NewSection
+import com.saagie.htmltozendeskuploader.zendesk.HtmlToZendeskError
+import com.saagie.htmltozendeskuploader.zendesk.HtmlToZendeskError.InvalidFileStructure
+import com.saagie.htmltozendeskuploader.zendesk.Zendesk
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileTreeElement
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.TaskAction
-import zendesk.HtmlToZendeskError
-import zendesk.HtmlToZendeskError.InvalidFileStructure
-import zendesk.Zendesk
 import kotlin.properties.Delegates
 
 open class HtmlToZendeskTask : DefaultTask() {
@@ -63,7 +68,7 @@ open class HtmlToZendeskTask : DefaultTask() {
     }
 
     @TaskAction
-    fun paf() { //Warning : this function may not always work as it is not named pwet
+    fun action() {
         val sectionIdMapping = mutableMapOf<String, Long>()
         project.fileTree(sourceDir).visit {
             when {
@@ -81,21 +86,24 @@ open class HtmlToZendeskTask : DefaultTask() {
                 }
                 file.extension == "html" ->
                     sectionIdMapping[this.relativePath.parent.pathString]
-                        .rightIfNotNull { InvalidFileStructure("Article $file should be located in a section, not directly under a category") }
+                        .rightIfNotNull {
+                            InvalidFileStructure(
+                                "Article $file should be located in a section, not directly under a category"
+                            )
+                        }
                         .map { parentSectionId -> this.toArticle(parentSectionId) }
                         .flatMap(zendesk::createArticle)
                         .handleErrorWith(errorHandler)
-
             }
         }
     }
 
     private fun FileTreeElement.toSection(parentSectionId: Long?) =
         NewSection(
-        name = name.substringAfter("-"),
-        parentSectionId = parentSectionId,
-        position = name.substringBefore("-","0").toInt()
-    )
+            name = name.substringAfter("-"),
+            parentSectionId = parentSectionId,
+            position = name.substringBefore("-", "0").toInt()
+        )
 
     private fun FileTreeElement.toArticle(parentSectionId: Long) = Article(
         title = name.removeSuffix(".${file.extension}"),
@@ -104,6 +112,3 @@ open class HtmlToZendeskTask : DefaultTask() {
         path = relativePath.getFile(project.file(sourceDir))
     )
 }
-
-
-

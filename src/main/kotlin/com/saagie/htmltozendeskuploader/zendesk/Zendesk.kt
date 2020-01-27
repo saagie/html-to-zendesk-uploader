@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package zendesk
+package com.saagie.htmltozendeskuploader.zendesk
 
 import arrow.core.*
 import arrow.core.extensions.either.applicative.applicative
@@ -28,13 +28,14 @@ import com.github.kittinunf.fuel.core.extensions.authentication
 import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.kittinunf.fuel.core.requests.UploadRequest
 import com.github.kittinunf.fuel.core.requests.upload
-import com.saagie.htmltozendeskuploader.zendesk.gson
 import com.saagie.htmltozendeskuploader.model.Article
 import com.saagie.htmltozendeskuploader.model.ArticleAttachment
 import com.saagie.htmltozendeskuploader.model.ExistingSection
 import com.saagie.htmltozendeskuploader.model.NewSection
-import zendesk.HtmlToZendeskError.ZendeskRequestError.*
-import zendesk.ZendeskRequest.DeleteSection
+import com.saagie.htmltozendeskuploader.zendesk.HtmlToZendeskError.ZendeskRequestError.ResourceDoesNotExist
+import com.saagie.htmltozendeskuploader.zendesk.HtmlToZendeskError.ZendeskRequestError.UnexpectedRequestError
+import com.saagie.htmltozendeskuploader.zendesk.HtmlToZendeskError.ZendeskRequestError.UnexpectedRequestResult
+import com.saagie.htmltozendeskuploader.zendesk.ZendeskRequest.DeleteSection
 import java.io.File
 import kotlin.reflect.KClass
 
@@ -139,8 +140,8 @@ class Zendesk(
             .map { attachmentsMapping ->
                 attachmentsMapping toT article.replaceImgUrlWithAttachmentUrl(attachmentsMapping)
             }
-            .flatmapTupleRight (::postArticle)
-            .flatMap {(attachments, articleId) ->
+            .flatmapTupleRight(::postArticle)
+            .flatMap { (attachments, articleId) ->
                 linkAttachmentsToArticle(attachments.values, articleId)
             }
 
@@ -150,7 +151,7 @@ class Zendesk(
 
     private fun uploadImages(article: Article) =
         article.getBodyImages()
-            .map { it to uploadArticleImage("${article.path.parent}/${it}") }
+            .map { it to uploadArticleImage("${article.path.parent}/$it") }
             .map { (imgName, uploadResult) ->
                 uploadResult.fold({
                     it.left()
@@ -209,7 +210,6 @@ class Zendesk(
                 })
 }
 
-private fun <A,B,C,D> Either<A,Tuple2<B,C>>.flatmapTupleRight(block : (C)->Either<A,D>) = flatMap {
-    it.map(block).sequence(Either.applicative()).fix().map{ it.fix() }
+private fun <A, B, C, D> Either<A, Tuple2<B, C>>.flatmapTupleRight(block: (C) -> Either<A, D>) = flatMap {
+    it.map(block).sequence(Either.applicative()).fix().map { it.fix() }
 }
-

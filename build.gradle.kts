@@ -124,7 +124,7 @@ kotlinter {
     ignoreFailures = false
     reporters = arrayOf("html")
     experimentalRules = false
-    disabledRules = arrayOf("import-ordering")
+    disabledRules = arrayOf("import-ordering","no-wildcard-imports")
 }
 
 gradlePlugin {

@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package zendesk
+package com.saagie.htmltozendeskuploader.zendesk
 
 import com.github.kittinunf.fuel.core.FuelError
 
