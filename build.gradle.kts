@@ -70,6 +70,12 @@ config {
                 email = "pierre@saagie.com"
                 roles = listOf("developer")
             }
+            person {
+                id = "ludo"
+                name = "Ludo Pradel"
+                email = "ludovic.pradel@saagie.com"
+                roles = listOf("developer")
+            }
         }
     }
 }
