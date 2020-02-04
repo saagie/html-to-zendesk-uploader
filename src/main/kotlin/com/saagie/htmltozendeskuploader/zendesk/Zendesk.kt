@@ -142,7 +142,10 @@ class Zendesk(
             }
             .flatmapTupleRight(::postArticle)
             .flatMap { (attachments, articleId) ->
-                linkAttachmentsToArticle(attachments.values, articleId)
+                if (attachments.isNotEmpty())
+                    linkAttachmentsToArticle(attachments.values, articleId)
+                else
+                    Either.right(article)
             }
 
     private fun uploadArticleImage(path: String) =
