@@ -111,7 +111,7 @@ class Zendesk(
     val user: String,
     val password: String,
     val categoryId: Long,
-    val pattern: String?
+    val pattern: String? = null
 ) {
 
     fun createSectionOrOverwriteIfExist(section: NewSection) =
