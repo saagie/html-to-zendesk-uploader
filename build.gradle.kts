@@ -25,7 +25,9 @@ plugins {
     id("io.gitlab.arturbosch.detekt") version "1.3.1"
     id("org.jmailen.kotlinter") version "2.1.3"
     id("org.kordamp.gradle.project") version "0.31.2"
-    id("net.thauvin.erik.gradle.semver").version("1.0.4")
+    id("net.thauvin.erik.gradle.semver") version "1.0.4"
+    id("com.adarshr.test-logger") version "2.0.0"
+
     kotlin("jvm") version "1.3.61"
 }
 
@@ -96,7 +98,6 @@ repositories {
     gradlePluginPortal()
 }
 
-
 dependencies {
     implementation(gradleApi())
     implementation(kotlin("stdlib-jdk8", version = versions.kotlin))
@@ -105,6 +106,9 @@ dependencies {
     implementation("com.github.kittinunf.fuel:fuel-gson:${versions.fuel}")
     api("io.arrow-kt:arrow-syntax:${versions.arrow}")
     api("io.arrow-kt:arrow-core:${versions.arrow}")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.6.0")
+    testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.21")
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.3.1")
 }
 
 tasks {
@@ -120,7 +124,6 @@ tasks {
         }
     }
 }
-
 
 detekt {
     input = files("src/main/kotlin", "src/test/kotlin")
