@@ -27,22 +27,33 @@ import com.saagie.htmltozendeskuploader.model.NewSection
 import com.saagie.htmltozendeskuploader.zendesk.HtmlToZendeskError
 import com.saagie.htmltozendeskuploader.zendesk.HtmlToZendeskError.InvalidFileStructure
 import com.saagie.htmltozendeskuploader.zendesk.Zendesk
+import kotlin.properties.Delegates
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileTreeElement
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
-import kotlin.properties.Delegates
+
+const val HIERARCHY_PATTERN = "^([0-9]+)-(.+)"
 
 open class HtmlToZendeskTask : DefaultTask() {
     @InputDirectory
     lateinit var sourceDir: Any
+
     @Input
     lateinit var apiBasePath: String
+
     @Input
     lateinit var user: String
+
     @Input
     lateinit var password: String
+
+    @Input
+    @Optional
+    var pattern: String? = null
+
     @get:Input
     var targetCategoryId by Delegates.notNull<Long>()
 
@@ -51,7 +62,8 @@ open class HtmlToZendeskTask : DefaultTask() {
             url = apiBasePath,
             user = user,
             password = password,
-            categoryId = targetCategoryId
+            categoryId = targetCategoryId,
+            pattern = pattern
         )
     }
 
@@ -99,10 +111,18 @@ open class HtmlToZendeskTask : DefaultTask() {
     }
 
     private fun FileTreeElement.toSection(parentSectionId: Long?) =
-        NewSection(
-            name = name.substringAfter("-"),
+        Regex(HIERARCHY_PATTERN).matchEntire(name)?.let {
+            it.destructured.let { (position, name) ->
+                NewSection(
+                    name = name,
+                    parentSectionId = parentSectionId,
+                    position = position.toInt()
+                )
+            }
+        } ?: NewSection(
+            name = name,
             parentSectionId = parentSectionId,
-            position = name.substringBefore("-", "0").toInt()
+            position = 0
         )
 
     private fun FileTreeElement.toArticle(parentSectionId: Long) = Article(
