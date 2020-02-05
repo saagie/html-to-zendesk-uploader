@@ -35,6 +35,8 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 import kotlin.properties.Delegates
 
+const val HIERARCHY_PATTERN = "^([0-9]+)-(.+)"
+
 open class HtmlToZendeskTask : DefaultTask() {
     @InputDirectory
     lateinit var sourceDir: Any
@@ -103,11 +105,19 @@ open class HtmlToZendeskTask : DefaultTask() {
     }
 
     private fun FileTreeElement.toSection(parentSectionId: Long?) =
-        NewSection(
-            name = name.substringAfter("-"),
-            parentSectionId = parentSectionId,
-            position = name.substringBefore("-", "0").toInt()
-        )
+        Regex(HIERARCHY_PATTERN).matchEntire(name)?.let {
+            it.destructured.let { (position, name) ->
+                NewSection(
+                    name = name,
+                    parentSectionId = parentSectionId,
+                    position = position.toInt()
+                )
+            }
+        } ?: NewSection(
+                name = name,
+                parentSectionId = parentSectionId,
+                position = 0
+            )
 
     private fun FileTreeElement.toArticle(parentSectionId: Long) = Article(
         title = name.removeSuffix(".${file.extension}"),
@@ -116,3 +126,4 @@ open class HtmlToZendeskTask : DefaultTask() {
         path = relativePath.getFile(project.file(sourceDir))
     )
 }
+
