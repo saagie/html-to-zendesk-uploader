@@ -188,7 +188,7 @@ class Zendesk(
     private fun getSectionWithPattern(pattern: String, parentSectionId: Long? = null) =
         ZendeskRequest.GetSections(categoryId).run()
             .flatMap {
-                it.sections.firstOrNone {section ->
+                it.sections.firstOrNone { section ->
                     pattern.toRegex().containsMatchIn(section.name) && section.parentSectionId == parentSectionId
                 }.toEither { ResourceDoesNotExist }
             }
