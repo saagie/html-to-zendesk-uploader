@@ -31,6 +31,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileTreeElement
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 import kotlin.properties.Delegates
 
@@ -43,6 +44,8 @@ open class HtmlToZendeskTask : DefaultTask() {
     lateinit var user: String
     @Input
     lateinit var password: String
+    @Input @Optional
+    var pattern: String? = null
     @get:Input
     var targetCategoryId by Delegates.notNull<Long>()
 
@@ -51,7 +54,8 @@ open class HtmlToZendeskTask : DefaultTask() {
             url = apiBasePath,
             user = user,
             password = password,
-            categoryId = targetCategoryId
+            categoryId = targetCategoryId,
+            pattern = pattern
         )
     }
 

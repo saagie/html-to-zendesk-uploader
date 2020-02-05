@@ -110,11 +110,14 @@ class Zendesk(
     val url: String,
     val user: String,
     val password: String,
-    val categoryId: Long
+    val categoryId: Long,
+    val pattern: String?
 ) {
 
     fun createSectionOrOverwriteIfExist(section: NewSection) =
-        getSection(section.name, section.parentSectionId)
+        (pattern?.let {
+            getSectionWithPattern(it, section.parentSectionId)
+        } ?: getSection(section.name, section.parentSectionId))
             .flatMap {
                 DeleteSection(it.id)
                     .run()
@@ -180,6 +183,14 @@ class Zendesk(
             .flatMap {
                 it.sections.firstOrNone { it.name == name && it.parentSectionId == parentSectionId }
                     .toEither { ResourceDoesNotExist }
+            }
+
+    private fun getSectionWithPattern(pattern: String, parentSectionId: Long? = null) =
+        ZendeskRequest.GetSections(categoryId).run()
+            .flatMap {
+                it.sections.firstOrNone {section ->
+                    pattern.toRegex().containsMatchIn(section.name) && section.parentSectionId == parentSectionId
+                }.toEither { ResourceDoesNotExist }
             }
 
     private fun createSection(section: NewSection) =
