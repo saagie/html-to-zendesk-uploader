@@ -64,6 +64,12 @@ data class Article(
     )
 }
 
+data class Translation(
+    val draft: Boolean = false,
+    val locale: String = DEFAULT_LOCALE,
+    val sourceId: Long
+)
+
 data class ArticleAttachment(
     val id: Long,
     val articleId: Long?,

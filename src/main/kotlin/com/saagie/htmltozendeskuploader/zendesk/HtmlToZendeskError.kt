@@ -25,5 +25,7 @@ sealed class HtmlToZendeskError {
         data class UnexpectedRequestError(val error: FuelError) : ZendeskRequestError()
         data class UnexpectedRequestResult(val error: String) : ZendeskRequestError()
     }
+
     data class InvalidFileStructure(val message: String) : HtmlToZendeskError()
+    object MissingArticleId : HtmlToZendeskError()
 }

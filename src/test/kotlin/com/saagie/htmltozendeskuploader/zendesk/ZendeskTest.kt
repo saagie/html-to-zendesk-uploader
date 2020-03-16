@@ -15,16 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.saagie.htmltozendeskuploader
+package com.saagie.htmltozendeskuploader.zendesk
 
 import com.saagie.htmltozendeskuploader.model.Article
-import com.saagie.htmltozendeskuploader.zendesk.Zendesk
+import java.io.File
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import java.io.File
 
 internal class ZendeskTest {
 
@@ -59,5 +58,61 @@ internal class ZendeskTest {
 
     companion object {
         const val ARTICLE_CREATED_RESPONSE = "{article: {id:37486578, section_id:98838}}"
+        const val TRANSLATION_UPDATED_RESPONSE = "{\n" +
+            "    \"translation\": {\n" +
+            "        \"source_id\": 360012610839,\n" +
+            "        \"source_type\": \"Article\",\n" +
+            "        \"locale\": \"en-us\",\n" +
+            "        \"draft\": false\n" +
+            "    }\n" +
+            "}"
+        const val ARTICLES_RESPONSE =
+            "{" +
+                "\"count\":0," +
+                "\"next_page\":null," +
+                "\"page\":1," +
+                "\"page_count\":0," +
+                "\"per_page\":30," +
+                "\"previous_page\":null," +
+                "\"articles\":[{id:37486578}, {id:37481477}]," +
+                "\"sort_by\":\"position\"," +
+                "\"sort_order\":\"asc\"" +
+            "}"
+        const val FIRST_TRANSLATIONS_RESPONSE =
+            "{\n" +
+                "    \"translations\": [\n" +
+                "        {\n" +
+                "            \"id\": 360028516079,\n" +
+                "            \"source_id\": 360012610839,\n" +
+                "            \"source_type\": \"Article\",\n" +
+                "            \"locale\": \"en-us\",\n" +
+                "            \"draft\": false\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"page\": 1,\n" +
+                "    \"previous_page\": null,\n" +
+                "    \"next_page\": null,\n" +
+                "    \"per_page\": 100,\n" +
+                "    \"page_count\": 1,\n" +
+                "    \"count\": 1\n" +
+                "}"
+        const val SECOND_TRANSLATIONS_RESPONSE =
+            "{\n" +
+                "    \"translations\": [\n" +
+                "        {\n" +
+                "            \"id\": 360028516080,\n" +
+                "            \"source_id\": 360012610839,\n" +
+                "            \"source_type\": \"Article\",\n" +
+                "            \"locale\": \"en-us\",\n" +
+                "            \"draft\": false\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"page\": 1,\n" +
+                "    \"previous_page\": null,\n" +
+                "    \"next_page\": null,\n" +
+                "    \"per_page\": 100,\n" +
+                "    \"page_count\": 1,\n" +
+                "    \"count\": 1\n" +
+                "}"
     }
 }

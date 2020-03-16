@@ -139,11 +139,17 @@ kotlinter {
 
 gradlePlugin {
     plugins {
-        create(project.name) {
+        create("htmltozendeskuploader") {
             id = packageName
             displayName = "Saagie html-to-zendesk-uploader Plugin"
             description = "Saagie html-to-zendesk-uploader Plugin for Gradle"
             implementationClass = "$packageName.HtmlToZendeskTask"
+        }
+        create("htmltozendeskpublisher") {
+            id = packageName
+            displayName = "Saagie html-to-zendesk-publisher Plugin"
+            description = "Saagie html-to-zendesk-publisher Plugin for Gradle"
+            implementationClass = "$packageName.PublishSectionZendeskTask"
         }
     }
 }
