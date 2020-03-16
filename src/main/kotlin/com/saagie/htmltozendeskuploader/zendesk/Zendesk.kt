@@ -110,7 +110,7 @@ sealed class ZendeskRequest<out T : ZendeskApiBody>(
 
     data class GetArticles(val sectionId: Long) : ZendeskRequest<ZendeskApiBody.ArticlesBody>(
         GET,
-        "/sections/${sectionId}/articles.json",
+        "/sections/$sectionId/articles.json",
         ZendeskApiBody.ArticlesBody::class
     )
 
@@ -202,7 +202,6 @@ class Zendesk(
             }
             .map { Unit }
 
-
     private fun getArticleTranslations(articleId: Long) =
         ZendeskRequest.GetArticleTranslations(articleId, "en-us").run()
             .map {
@@ -220,7 +219,7 @@ class Zendesk(
 
     private fun publishArticle(article: Article) =
         article.id.rightIfNotNull { HtmlToZendeskError.MissingArticleId }
-            .flatMap {getArticleTranslations(it)}
+            .flatMap { getArticleTranslations(it) }
             .flatMap { translations ->
                 translations.map { translation ->
                     updateTranslation(translation.copy(draft = false))

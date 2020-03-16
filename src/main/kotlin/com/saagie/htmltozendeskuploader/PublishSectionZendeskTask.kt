@@ -68,7 +68,7 @@ open class PublishSectionZendeskTask : DefaultTask() {
     @TaskAction
     fun action() {
         zendesk.getSection(sectionName)
-            .flatMap {section ->
+            .flatMap { section ->
                 zendesk.publishSection(section)
             }
             .handleErrorWith(errorHandler)

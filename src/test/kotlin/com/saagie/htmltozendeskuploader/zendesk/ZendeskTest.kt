@@ -18,6 +18,7 @@
 package com.saagie.htmltozendeskuploader.zendesk
 
 import com.saagie.htmltozendeskuploader.model.Article
+import com.saagie.htmltozendeskuploader.model.ExistingSection
 import java.io.File
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -48,9 +49,38 @@ internal class ZendeskTest {
             baseUrl.toString(),
             "user",
             "pass",
-            360002232959)
+            360002232959
+        )
 
         val result = zendeskApi.createArticle(anArticle)
+
+        assertTrue { result.isRight() }
+        server.shutdown()
+    }
+
+    @Test
+    fun `should publish all articles from a section`() {
+        server.enqueue(MockResponse().setBody(ARTICLES_RESPONSE).setResponseCode(201))
+        server.enqueue(MockResponse().setBody(FIRST_TRANSLATIONS_RESPONSE).setResponseCode(201))
+        server.enqueue(MockResponse().setBody(TRANSLATION_UPDATED_RESPONSE).setResponseCode(201))
+        server.enqueue(MockResponse().setBody(SECOND_TRANSLATIONS_RESPONSE).setResponseCode(201))
+        server.enqueue(MockResponse().setBody(TRANSLATION_UPDATED_RESPONSE).setResponseCode(201))
+        server.start()
+        val baseUrl = server.url("zendeskMock")
+
+        val section = ExistingSection(
+            id = 1,
+            name = "Toto",
+            parentSectionId = null
+        )
+        val zendeskApi = Zendesk(
+            baseUrl.toString(),
+            "user",
+            "pass",
+            360002232959
+        )
+
+        val result = zendeskApi.publishSection(section)
 
         assertTrue { result.isRight() }
         server.shutdown()
